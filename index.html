@@ -43,13 +43,32 @@
 
   /* ── Custom Cursor ── */
   .cursor-dot {
-    width: 8px; height: 8px;
-    background: var(--mauve);
-    border-radius: 50%;
+    width: 14px; height: 14px;
     position: fixed; top: 0; left: 0;
     pointer-events: none; z-index: 10000;
     transform: translate(-50%, -50%);
     transition: transform 0.1s var(--ease-soft);
+  }
+  .cursor-star-spin {
+    display: block;
+    width: 100%; height: 100%;
+    transform-origin: 50% 50%;
+  }
+  .cursor-dot.hovered .cursor-star-spin {
+    animation: spinStar 1.6s linear infinite;
+  }
+  .cursor-star {
+    width: 100%; height: 100%;
+    display: block;
+    fill: var(--mauve);
+    transition: fill 0.3s;
+  }
+  .cursor-dot.hovered .cursor-star {
+    fill: var(--dusty-pink);
+  }
+  @keyframes spinStar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
   .cursor-ring {
     width: 36px; height: 36px;
@@ -586,6 +605,108 @@
   }
   .masonry-item:hover .masonry-label { opacity: 1; transform: translateY(0); }
 
+  /* ── Deck (collection) item ── */
+  .masonry-item.deck-item {
+    overflow: visible;
+  }
+  .deck-item .masonry-overlay {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .deck {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 280 / 380;
+  }
+  .deck-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(42,34,32,0.16);
+    transition: transform 0.5s var(--ease-soft), box-shadow 0.5s;
+    transform-origin: 50% 85%;
+  }
+  .deck-img-1 { z-index: 4; transform: rotate(0deg)   translate(0px, 0px); }
+  .deck-img-2 { z-index: 3; transform: rotate(-2.5deg) translate(-3px, 2px); }
+  .deck-img-3 { z-index: 2; transform: rotate(2.5deg)  translate(3px, 3px); }
+  .deck-img-4 { z-index: 1; transform: rotate(-4.5deg) translate(-5px, 5px); }
+
+  .deck:hover .deck-img-1 { transform: rotate(-6deg) translate(-38px, -6px) scale(0.94); z-index: 4; }
+  .deck:hover .deck-img-2 { transform: rotate(-2deg) translate(-13px, -2px) scale(0.94); z-index: 3; }
+  .deck:hover .deck-img-3 { transform: rotate(2deg)  translate(13px, -2px)  scale(0.94); z-index: 2; }
+  .deck:hover .deck-img-4 { transform: rotate(6deg)  translate(38px, -6px)  scale(0.94); z-index: 1; }
+
+  .deck:hover .deck-img { box-shadow: 0 10px 22px rgba(42,34,32,0.22); }
+
+  .deck-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(42,34,32,0.72);
+    color: white;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.85rem;
+    border-radius: 100px;
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .deck:hover .deck-badge { opacity: 0; }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(42,34,32,0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 6000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s var(--ease-soft);
+  }
+  .lightbox.show { opacity: 1; pointer-events: auto; }
+  .lightbox-inner {
+    position: relative;
+    max-width: 88vw; max-height: 86vh;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  }
+  .lightbox-inner img {
+    max-width: 88vw; max-height: 74vh;
+    border-radius: 14px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.4);
+    display: block;
+  }
+  .lightbox-caption {
+    color: rgba(255,255,255,0.85);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .lightbox-close {
+    position: absolute; top: -3.2rem; right: 0;
+    background: transparent; border: none;
+    color: white; font-size: 1.4rem;
+    cursor: none;
+  }
+  .lightbox-nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+  }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+  .lightbox-prev { left: 4%; }
+  .lightbox-next { right: 4%; }
+
   /* ════════════════════════════
      CONTACT PAGE
   ════════════════════════════ */
@@ -733,7 +854,13 @@
 </head>
 <body>
 
-<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-dot" id="cursorDot">
+  <span class="cursor-star-spin">
+    <svg class="cursor-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0 L14.3 9.7 L24 12 L14.3 14.3 L12 24 L9.7 14.3 L0 12 L9.7 9.7 Z"/>
+    </svg>
+  </span>
+</div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="progress-bar" id="progressBar"></div>
 <div class="toast" id="toast">✦ message sent — i'll be in touch soon 🌸</div>
@@ -1140,10 +1267,32 @@
     </div>
 
     <!-- Item 9 -->
-    <div class="masonry-item" data-cat="portrait">
-      <img src="art-9.jpg" alt="flower crown study — portrait" loading="lazy">
-      <div class="masonry-overlay"><div class="masonry-label">flower crown study — portrait</div></div>
+    <div class="masonry-item" data-cat="abstract">
+      <img src="art-9.jpg" alt="tidal — abstract" loading="lazy">
+      <div class="masonry-overlay"><div class="masonry-label">tidal — abstract</div></div>
     </div>
+
+    <!-- Item 10 — collection deck (5 images) -->
+    <div class="masonry-item deck-item" data-cat="portrait">
+      <div class="deck" onclick="openLightbox(0)">
+        <img src="images/art/art-10-3.jpg" alt="flower crown study — collection, piece 3" class="deck-img deck-img-3" loading="lazy">
+        <img src="images/art/art-10-2.jpg" alt="flower crown study — collection, piece 2" class="deck-img deck-img-2" loading="lazy">
+        <img src="images/art/art-10-1.jpg" alt="flower crown study — collection, piece 1" class="deck-img deck-img-1" loading="lazy">
+        <div class="deck-badge">3 pieces ✦</div>
+      </div>
+      <div class="masonry-overlay"><div class="masonry-label">flower crown study — collection</div></div>
+    </div>
+  </div>
+
+  <!-- Lightbox for the collection deck -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <button class="lightbox-close" onclick="closeLightbox(event)">✕ close</button>
+      <img id="lightboxImg" src="" alt="flower crown study collection piece">
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+    <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1, event)">‹</button>
+    <button class="lightbox-nav lightbox-next" onclick="navLightbox(1, event)">›</button>
   </div>
 
   <footer>
@@ -1265,9 +1414,9 @@
   }
   animateRing();
 
-  document.querySelectorAll('a, button, .masonry-item, .featured-card, .service-item, .value-card, .tool-pill, .tag, .filter-btn').forEach(el => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hovered'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hovered'));
+  document.querySelectorAll('a, button, .masonry-item, .featured-card, .service-item, .value-card, .tool-pill, .tag, .filter-btn, .deck, .deck-img, .lightbox-nav, .lightbox-close').forEach(el => {
+    el.addEventListener('mouseenter', () => { ring.classList.add('hovered'); dot.classList.add('hovered'); });
+    el.addEventListener('mouseleave', () => { ring.classList.remove('hovered'); dot.classList.remove('hovered'); });
   });
 
   // ── Page Navigation ──
@@ -1299,6 +1448,46 @@
       item.style.transition = 'opacity 0.4s, transform 0.4s';
     });
   }
+
+  // ── Collection Deck Lightbox (item 9) ──
+  const deckImages = [
+    { src: 'images/art/art-9-1.jpg', caption: 'flower crown study — piece 1 of 4' },
+    { src: 'images/art/art-9-2.jpg', caption: 'flower crown study — piece 2 of 4' },
+    { src: 'images/art/art-9-3.jpg', caption: 'flower crown study — piece 3 of 4' },
+    { src: 'images/art/art-9-4.jpg', caption: 'flower crown study — piece 4 of 4' }
+  ];
+  let lightboxIndex = 0;
+
+  function updateLightbox() {
+    document.getElementById('lightboxImg').src = deckImages[lightboxIndex].src;
+    document.getElementById('lightboxCaption').textContent = deckImages[lightboxIndex].caption;
+  }
+
+  function openLightbox(i) {
+    lightboxIndex = i;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('lightbox').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  function navLightbox(dir, e) {
+    if (e) e.stopPropagation();
+    lightboxIndex = (lightboxIndex + dir + deckImages.length) % deckImages.length;
+    updateLightbox();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('lightbox').classList.contains('show')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') navLightbox(1);
+    if (e.key === 'ArrowLeft') navLightbox(-1);
+  });
 
   // ── Contact Submit ──
   function sendMessage() {
